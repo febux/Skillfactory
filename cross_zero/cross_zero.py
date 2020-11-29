@@ -169,5 +169,6 @@ while game == 1:
     move_player2()
     
 print("Thank you for the game!")
+input("Press close to exit...")
 ###
 
