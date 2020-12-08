@@ -4,10 +4,20 @@ class Pet:
         self.gender = gender
         self.age = age
 
+
 class Cat(Pet):
     kind = "Cat"
+
+#    def __repr__(self):
+#        return '({kind}; {name}; {gender}; {age})'.format(kind=self.kind, name=self.name,
+#                                                          gender=self.gender, age=self.age)
+
     def get_info(self):
-        return self.kind, self.name, self.gender, self.age
+        print("Kind of pet:", self.kind)
+        print("Name:", self.name)
+        print("Gender:", self.gender)
+        print("Age:", self.age)
+        print()
 
     def get_kind(self):
         return self.kind
@@ -20,12 +30,17 @@ class Cat(Pet):
 
     def get_age(self):
         return self.age
+
 
 class Dog(Pet):
     kind = "Dog"
 
     def get_info(self):
-        return self.kind, self.name, self.gender, self.age
+        print("Kind of pet:", self.kind)
+        print("Name:", self.name)
+        print("Gender:", self.gender)
+        print("Age:", self.age)
+        print()
 
     def get_kind(self):
         return self.kind
@@ -39,11 +54,16 @@ class Dog(Pet):
     def get_age(self):
         return self.age
 
+
 class Parrot(Pet):
     kind = "Parrot"
 
     def get_info(self):
-        return self.kind, self.name, self.gender, self.age
+        print("Kind of pet:", self.kind)
+        print("Name:", self.name)
+        print("Gender:", self.gender)
+        print("Age:", self.age)
+        print()
 
     def get_kind(self):
         return self.kind

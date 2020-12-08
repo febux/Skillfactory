@@ -7,6 +7,8 @@ square2 = Square(8)
 circle1 = Circle(9)
 circle2 = Circle(3)
 
+print(rect1.get_info())
+
 figures = [rect1, rect2, square1, square2, circle1, circle2]
 
 for figure in figures:
