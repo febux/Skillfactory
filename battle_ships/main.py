@@ -207,10 +207,10 @@ def new_game():
         print()
         if check_win() == 1:
             print("You win!")
-            break
+            return True
         if check_win() == 2:
             print("AI wins!")
-            break
+            return True
 
         print("Now AI shoot!")
         print()
@@ -224,10 +224,10 @@ def new_game():
 
         if check_win() == 1:
             print("You win!")
-            break
+            return True
         if check_win() == 2:
             print("AI wins!")
-            break
+            return True
 
 
 def main_menu():
