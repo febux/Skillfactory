@@ -1,11 +1,9 @@
 from class_field import BattleField
 from class_ship import BattleShip
+from class_exception import LengthException
 import random
 
-my_damage_count = 0
-ai_damage_count = 0
 ships = []
-used_coordinates = [[0, 0]]
 ships_patterns = [
     [[1, 1, 1, 2, 1, 3], [2, 5, 2, 6], [3, 1, 3, 2], [4, 4], [5, 2], [5, 6], [6, 4]],
     [[1, 3, 1, 4, 1, 5], [3, 1, 3, 2], [4, 5, 4, 6], [5, 1], [1, 1], [6, 6], [6, 3]],
@@ -19,8 +17,8 @@ ships_patterns = [
 
 
 # функция ввода значений кораблей для игрока с проверкой на длину кораблей и обработкой исключений
-def enter_value(my_field, number_ship):
-    global ships, ships_patterns
+def enter_value(field, number_ship):
+    global ships
     final_value_flag = 0
     length = 0
     text = ''
@@ -43,116 +41,30 @@ def enter_value(my_field, number_ship):
 
         try:
             final_value = list(map(int, temp))
+
+            if len(final_value) != length:
+                raise LengthException()
         except ValueError:
             print("You entered wrong type of coordinates.")
-        except IndexError:
+        except LengthException:
             print("You entered wrong length of coordinates.")
         else:
             if len(final_value) == length:
                 ship = BattleShip(final_value)
 
-                if ship.check_dist(my_field.get_values_field()):
+                if ship.check_dist(field.get_values_field):
                     ships.append(list(ship.get_coordinates()))
                     print()
                     print(f"Amount of ships: {number_ship + 1}/7")
                     print()
                     final_value_flag = 1
-            else:
-                print("You entered wrong length of coordinates.")
-
-
-# функция выстрелов для ИИ и игрока, с обработкой исключений и проверкой длины координат,
-# а также с проверкой занятости клеток поля
-def shot(field, field_ind):
-    global my_damage_count, ai_damage_count
-    shot_flag = 0
-
-    while shot_flag == 0:
-
-        if field_ind == 2:
-            temp = input("Enter coordinates of shot in row-column format, for example 32 or 65: ").lower()
-
-            if temp == "exit":
-                return True
-
-            try:
-                coordinates = list(map(int, temp))
-            except ValueError:
-                print("You entered wrong type of coordinates.")
-            except IndexError:
-                print("You entered wrong length of coordinates.")
-            else:
-                temp_ships = field.get_ships()
-
-                if len(coordinates) == 2:
-                    for i in range(7):
-                        if len(temp_ships[i]) == 6:
-                            for j in (0, 2, 4):
-                                if coordinates == temp_ships[i][j:j + 2]:
-                                    shot_flag = 1
-                        if len(temp_ships[i]) == 4:
-                            for j in (0, 2):
-                                if coordinates == temp_ships[i][j:j + 2]:
-                                    shot_flag = 1
-                        if len(temp_ships[i]) == 2:
-                            if coordinates == temp_ships[i][0:2]:
-                                shot_flag = 1
-
-                    if field.get_value_field(coordinates) == "o":
-                        if shot_flag == 1:
-                            field.set_value_field(coordinates, "X")
-                            ai_damage_count += 1
-                        else:
-                            field.set_value_field(coordinates, "T")
-                            shot_flag = 1
-                    else:
-                        print("This cell is busy already, try again.")
-                        shot_flag = 0
-                else:
-                    print("You entered wrong length of coordinates.")
-
-        if field_ind == 1:
-            coordinates = []
-            flag_gen = 0
-
-            while flag_gen == 0:
-                coordinates = [random.randint(1, 6), random.randint(1, 6)]
-                if coordinates not in used_coordinates:
-                    used_coordinates.append(coordinates)
-                    flag_gen = 1
-
-            temp_ships = field.get_ships()
-
-            for i in range(7):
-                if len(temp_ships[i]) == 6:
-                    for j in (0, 2, 4):
-                        if coordinates == temp_ships[i][j:j + 2]:
-                            shot_flag = 1
-                if len(temp_ships[i]) == 4:
-                    for j in (0, 2):
-                        if coordinates == temp_ships[i][j:j + 2]:
-                            shot_flag = 1
-                if len(temp_ships[i]) == 2:
-                    if coordinates == temp_ships[i][0:2]:
-                        shot_flag = 1
-
-            if field.get_value_field(coordinates) == "o" or field.get_value_field(coordinates) == "▇":
-                if shot_flag == 1:
-                    field.set_value_field(coordinates, "X")
-                    my_damage_count += 1
-                else:
-                    field.set_value_field(coordinates, "T")
-                    shot_flag = 1
 
 
 # функция проверки выигрыша по количеству урона
-def check_win():
-    global my_damage_count, ai_damage_count
+def check_win(field):
 
-    if my_damage_count == 11:
-        return 2
-    elif ai_damage_count == 11:
-        return 1
+    if field.get_damage_count == 11:
+        return True
     else:
         return False
 
@@ -194,36 +106,30 @@ def new_game():
     print()
     print("The field of AI (Artificial Intelligence) is filled with ships too.\n")
     print("Now start to shoot! You are the first.")
-    while check_win() != 1 or check_win() != 2:
+    while True:
         print("You shoot!")
         print()
         ai_field.print_field()
-        if shot(ai_field, 2):
+        if ai_field.shot(2):
             return True
 
         print()
         ai_field.print_field()
         print()
 
-        if check_win() == 1:
+        if check_win(ai_field):
             print("You win!")
-            return True
-        if check_win() == 2:
-            print("AI wins!")
             return True
 
         print("Now AI shoot!")
         print()
-        shot(my_field, 1)
+        my_field.shot(1)
 
         print()
         my_field.print_field()
         print()
 
-        if check_win() == 1:
-            print("You win!")
-            return True
-        if check_win() == 2:
+        if check_win(my_field):
             print("AI wins!")
             return True
 
