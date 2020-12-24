@@ -18,6 +18,7 @@ ships_patterns = [
 ]
 
 
+# функция ввода значений кораблей для игрока с проверкой на длину кораблей и обработкой исключений
 def enter_value(my_field, number_ship):
     global ships, ships_patterns
     final_value_flag = 0
@@ -52,7 +53,6 @@ def enter_value(my_field, number_ship):
 
                 if ship.check_dist(my_field.get_values_field()):
                     ships.append(list(ship.get_coordinates()))
-                    # print(ships)
                     print()
                     print(f"Amount of ships: {number_ship + 1}/7")
                     print()
@@ -61,6 +61,8 @@ def enter_value(my_field, number_ship):
                 print("You entered wrong length of coordinates.")
 
 
+# функция выстрелов для ИИ и игрока, с обработкой исключений и проверкой длины координат,
+# а также с проверкой занятости клеток поля
 def shot(field, field_ind):
     global my_damage_count, ai_damage_count
     shot_flag = 0
@@ -100,7 +102,6 @@ def shot(field, field_ind):
                         if shot_flag == 1:
                             field.set_value_field(coordinates, "X")
                             ai_damage_count += 1
-                            # print(ai_damage_count)
                         else:
                             field.set_value_field(coordinates, "T")
                             shot_flag = 1
@@ -118,7 +119,6 @@ def shot(field, field_ind):
                 coordinates = [random.randint(1, 6), random.randint(1, 6)]
                 if coordinates not in used_coordinates:
                     used_coordinates.append(coordinates)
-                    # print(used_coordinates)
                     flag_gen = 1
 
             temp_ships = field.get_ships()
@@ -140,12 +140,12 @@ def shot(field, field_ind):
                 if shot_flag == 1:
                     field.set_value_field(coordinates, "X")
                     my_damage_count += 1
-                    # print(my_damage_count)
                 else:
                     field.set_value_field(coordinates, "T")
                     shot_flag = 1
 
 
+# функция проверки выигрыша по количеству урона
 def check_win():
     global my_damage_count, ai_damage_count
 
@@ -157,6 +157,7 @@ def check_win():
         return False
 
 
+# функция игры
 def new_game():
     global ships
     my_field = BattleField("")
@@ -190,9 +191,8 @@ def new_game():
     rand = random.randint(0, 7)
     ai_field = BattleField(ships_patterns[rand], True)
     print(".......")
+    print()
     print("The field of AI (Artificial Intelligence) is filled with ships too.\n")
-    # ai_field.print_field()
-    # print(ai_field.get_ships())
     print("Now start to shoot! You are the first.")
     while check_win() != 1 or check_win() != 2:
         print("You shoot!")
@@ -200,11 +200,11 @@ def new_game():
         ai_field.print_field()
         if shot(ai_field, 2):
             return True
-        # print(check_win())
-        # print(ai_field.get_ships())
+
         print()
         ai_field.print_field()
         print()
+
         if check_win() == 1:
             print("You win!")
             return True
@@ -214,10 +214,8 @@ def new_game():
 
         print("Now AI shoot!")
         print()
-        # my_field.print_field()
         shot(my_field, 1)
-        # print(check_win())
-        # print(my_field.get_ships())
+
         print()
         my_field.print_field()
         print()
@@ -230,6 +228,8 @@ def new_game():
             return True
 
 
+# функция главного меню, где можно начать игру или закончить
+# также игрок сюда возвращается вводом "exit" вместо координат
 def main_menu():
     global ships
     print("Welcome to The BattleShips!")

@@ -1,3 +1,4 @@
+# класс корабля принимает в себя набор координат с определённой длинной
 class BattleShip:
     def __init__(self, coordinates):
         self.coordinates = coordinates
@@ -17,6 +18,8 @@ class BattleShip:
             self.x = coordinates[0]
             self.y = coordinates[1]
 
+    # проверка расстояния в одну клетку при выставлении кораблей на поле,
+    # также проверка связанности координат
     def check_dist(self, massive):
         if len(self.coordinates) == 6:
             if (self.x == 0 or self.y == 0 or self.x1 == 0 or self.y1 == 0 or self.x2 == 0 or self.y2 == 0
@@ -266,6 +269,7 @@ class BattleShip:
             else:
                 return True
 
+    # получить координаты корабля
     def get_coordinates(self):
         if len(self.coordinates) == 6:
             return self.x, self.y, self.x1, self.y1, self.x2, self.y2

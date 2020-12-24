@@ -1,3 +1,5 @@
+# класс поля принимает в себя либо весь набор кораблей, либо только несколько,
+# а также атрибут скрытности для поля ИИ
 class BattleField:
     def __init__(self, ships, hidden=False):
         self.ships = ships
@@ -27,18 +29,23 @@ class BattleField:
 
         self.field = field
 
+    # печатаем всё поле
     def print_field(self):
         for i in range(7):
             print(" ".join(self.field[i]) + "\n")
 
+    # получаем значения всего поля
     def get_values_field(self):
         return self.field
 
+    # получаем значения всех кораблей
     def get_ships(self):
         return self.ships
 
+    # получаем значение корабля с определёнными координатами
     def get_value_field(self, coordinates):
         return self.field[coordinates[0]][coordinates[1]]
 
+    # устанавливаем значение с определёнными координатами
     def set_value_field(self, coordinates, value):
         self.field[coordinates[0]][coordinates[1]] = value
