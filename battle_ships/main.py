@@ -3,7 +3,6 @@ from class_ship import BattleShip
 from class_exception import LengthException
 import random
 
-ships = []
 ships_patterns = [
     [[1, 1, 1, 2, 1, 3], [2, 5, 2, 6], [3, 1, 3, 2], [4, 4], [5, 2], [5, 6], [6, 4]],
     [[1, 3, 1, 4, 1, 5], [3, 1, 3, 2], [4, 5, 4, 6], [5, 1], [1, 1], [6, 6], [6, 3]],
@@ -18,8 +17,7 @@ ships_patterns = [
 
 # функция ввода значений кораблей для игрока с проверкой на длину кораблей и обработкой исключений
 def enter_value(field, number_ship):
-    global ships
-    final_value_flag = 0
+
     length = 0
     text = ''
 
@@ -33,7 +31,7 @@ def enter_value(field, number_ship):
         text = "Enter coordinates 1-cells ship in row-column format, for example 61: "
         length = 2
 
-    while final_value_flag == 0:
+    while True:
         temp = input(text).lower()
 
         if temp == "exit":
@@ -52,12 +50,11 @@ def enter_value(field, number_ship):
             if len(final_value) == length:
                 ship = BattleShip(final_value)
 
-                if ship.check_dist(field.get_values_field):
-                    ships.append(list(ship.get_coordinates()))
+                if ship.check_dist(field.get_values_field, field.size):
                     print()
                     print(f"Amount of ships: {number_ship + 1}/7")
                     print()
-                    final_value_flag = 1
+                    return ship
 
 
 # функция проверки выигрыша по количеству урона
@@ -71,38 +68,45 @@ def check_win(field):
 
 # функция игры
 def new_game():
-    global ships
-    my_field = BattleField("")
+
+    my_field = BattleField()
     my_field.print_field()
     print("OKAY, We have a field and we need to fill it by ships.\n")
     print("If you enter \"Exit\" instead of coordinates, you are going to main menu. Remember it! \n")
 
     for i in range(7):
         if i == 0:
-            if enter_value(my_field, i):
+            ship = enter_value(my_field, i)
+            if ship is True:
                 return True
             else:
-                my_field = BattleField(ships)
+                my_field.add_ship(ship)
                 my_field.print_field()
         elif i == 1 or i == 2:
-            if enter_value(my_field, i):
+            ship = enter_value(my_field, i)
+            if ship is True:
                 return True
             else:
-                my_field = BattleField(ships)
+                my_field.add_ship(ship)
                 my_field.print_field()
         elif i == 3 or i == 4 or i == 5 or i == 6:
-            if enter_value(my_field, i):
+            ship = enter_value(my_field, i)
+            if ship is True:
                 return True
             else:
-                my_field = BattleField(ships)
+                my_field.add_ship(ship)
                 my_field.print_field()
 
+    # print(my_field.get_ships)
     print()
     print("Now the field is filled with ships.\n")
 
     rand = random.randint(0, 7)
-    ai_field = BattleField(ships_patterns[rand], True)
-    print(".......")
+    ai_field = BattleField(hidden=True)
+    for i in range(7):
+        ship = BattleShip(ships_patterns[rand][i])
+        ai_field.add_ship(ship)
+
     print()
     print("The field of AI (Artificial Intelligence) is filled with ships too.\n")
     print("Now start to shoot! You are the first.")
@@ -137,14 +141,12 @@ def new_game():
 # функция главного меню, где можно начать игру или закончить
 # также игрок сюда возвращается вводом "exit" вместо координат
 def main_menu():
-    global ships
     print("Welcome to The BattleShips!")
     start_flag = input("For starting game enter Start, for closing - any other key: ").lower()
     print()
 
     if start_flag == "start":
         if new_game():
-            ships = []
             main_menu()
     else:
         input("Press any key for closing...")

@@ -4,31 +4,22 @@ import random
 # класс поля принимает в себя либо весь набор кораблей, либо только несколько,
 # а также атрибут скрытности для поля ИИ
 class BattleField:
-    def __init__(self, ships, hidden=False):
+    def __init__(self, size=6, hidden=False):
+        ships = []
+        self.size = size
         self.ships = ships
         self.hidden = hidden
 
-        field = [["o" for j in range(8)] for i in range(8)]
+        field = [["o" for j in range(size + 2)] for i in range(size + 2)]
         field[0][0] = "\\"
 
-        for i in range(6):
+        for i in range(size):
             field[0][i + 1] = str(i + 1)
             field[i + 1][0] = str(i + 1)
 
-        for i in range(7):
-            field[7][i] = ""
-            field[i][7] = ""
-
-        if ships != "" and not hidden:
-            for i in range(len(ships)):
-                if len(ships[i]) == 6:
-                    for j in (0, 2, 4):
-                        field[ships[i][j]][ships[i][j + 1]] = "▇"
-                elif len(ships[i]) == 4:
-                    for j in (0, 2):
-                        field[ships[i][j]][ships[i][j + 1]] = "▇"
-                elif len(ships[i]) == 2:
-                    field[ships[i][0]][ships[i][0 + 1]] = "▇"
+        for i in range(size + 1):
+            field[size + 1][i] = ""
+            field[i][size + 1] = ""
 
         my_damage_count = 0
         ai_damage_count = 0
@@ -41,6 +32,21 @@ class BattleField:
 
         self.used_coordinates = used_coordinates
         self.field = field
+
+    # добаляем корабль на поле
+    def add_ship(self, ship):
+        if not self.hidden:
+            if ship.length == 3:
+                self.field[ship.x][ship.y] = "▇"
+                self.field[ship.x1][ship.y1] = "▇"
+                self.field[ship.x2][ship.y2] = "▇"
+            elif ship.length == 2:
+                self.field[ship.x][ship.y] = "▇"
+                self.field[ship.x1][ship.y1] = "▇"
+            elif ship.length == 1:
+                self.field[ship.x][ship.y] = "▇"
+
+        self.ships.append(ship)
 
     # печатаем всё поле
     def print_field(self):
@@ -94,34 +100,34 @@ class BattleField:
                 except LengthException:
                     print("You entered wrong length of coordinates.")
                 else:
-                    temp_ships = self.ships
 
-                    if len(coordinates) == 2:
-                        for i in range(7):
-                            if len(temp_ships[i]) == 6:
-                                for j in (0, 2, 4):
-                                    if coordinates == temp_ships[i][j:j + 2]:
-                                        shot_flag = 1
-                            if len(temp_ships[i]) == 4:
-                                for j in (0, 2):
-                                    if coordinates == temp_ships[i][j:j + 2]:
-                                        shot_flag = 1
-                            if len(temp_ships[i]) == 2:
-                                if coordinates == temp_ships[i][0:2]:
-                                    shot_flag = 1
-
-                        if self.get_value_field(coordinates) == "o":
-                            if shot_flag == 1:
-                                self.set_value_field(coordinates, "X")
-                                self.damage += 1
-                            else:
-                                self.set_value_field(coordinates, "T")
+                    for ship in self.ships:
+                        # print(ship)
+                        if ship.length == 3:
+                            if ((coordinates[0] == ship.x and coordinates[1] == ship.y)
+                                    or (coordinates[0] == ship.x1 and coordinates[1] == ship.y1)
+                                    or (coordinates[0] == ship.x2 and coordinates[1] == ship.y2)):
+                                shot_flag = 1
+                        if ship.length == 2:
+                            if ((coordinates[0] == ship.x and coordinates[1] == ship.y)
+                                    or (coordinates[0] == ship.x1 and coordinates[1] == ship.y1)):
+                                shot_flag = 1
+                        if ship.length == 1:
+                            if coordinates[0] == ship.x and coordinates[1] == ship.y:
                                 shot_flag = 1
 
-                            print(f"Your shot is {coordinates[0]}:{coordinates[1]}")
+                    if self.get_value_field(coordinates) == "o":
+                        if shot_flag == 1:
+                            self.set_value_field(coordinates, "X")
+                            self.damage += 1
                         else:
-                            print("This cell is busy already, try again.")
-                            shot_flag = 0
+                            self.set_value_field(coordinates, "T")
+                            shot_flag = 1
+
+                        print(f"Your shot is {coordinates[0]}:{coordinates[1]}")
+                    else:
+                        print("This cell is busy already, try again.")
+                        shot_flag = 0
 
             if player == 1:
                 coordinates = []
@@ -133,19 +139,19 @@ class BattleField:
                         self.used_coordinates.append(coordinates)
                         flag_gen = 1
 
-                temp_ships = self.ships
-
-                for i in range(7):
-                    if len(temp_ships[i]) == 6:
-                        for j in (0, 2, 4):
-                            if coordinates == temp_ships[i][j:j + 2]:
-                                shot_flag = 1
-                    if len(temp_ships[i]) == 4:
-                        for j in (0, 2):
-                            if coordinates == temp_ships[i][j:j + 2]:
-                                shot_flag = 1
-                    if len(temp_ships[i]) == 2:
-                        if coordinates == temp_ships[i][0:2]:
+                for ship in self.ships:
+                    # print(ship)
+                    if ship.length == 3:
+                        if ((coordinates[0] == ship.x and coordinates[1] == ship.y)
+                                or (coordinates[0] == ship.x1 and coordinates[1] == ship.y1)
+                                or (coordinates[0] == ship.x2 and coordinates[1] == ship.y2)):
+                            shot_flag = 1
+                    if ship.length == 2:
+                        if ((coordinates[0] == ship.x and coordinates[1] == ship.y)
+                                or (coordinates[0] == ship.x1 and coordinates[1] == ship.y1)):
+                            shot_flag = 1
+                    if ship.length == 1:
+                        if coordinates[0] == ship.x and coordinates[1] == ship.y:
                             shot_flag = 1
 
                 if self.get_value_field(coordinates) == "o" or self.get_value_field(coordinates) == "▇":

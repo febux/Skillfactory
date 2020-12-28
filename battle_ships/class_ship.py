@@ -9,22 +9,34 @@ class BattleShip:
             self.y1 = coordinates[3]
             self.x2 = coordinates[4]
             self.y2 = coordinates[5]
+            self.length = 3
         elif len(coordinates) == 4:
             self.x = coordinates[0]
             self.y = coordinates[1]
             self.x1 = coordinates[2]
             self.y1 = coordinates[3]
+            self.length = 2
         elif len(coordinates) == 2:
             self.x = coordinates[0]
             self.y = coordinates[1]
+            self.length = 1
+
+    def __repr__(self):
+        if self.length == 3:
+            return f"[{self.x}, {self.y}], [{self.x1}, {self.y1}], [{self.x2}, {self.y2}]"
+        elif self.length == 2:
+            return f"[{self.x}, {self.y}], [{self.x1}, {self.y1}]"
+        elif self.length == 1:
+            return f"[{self.x}, {self.y}]"
 
     # проверка расстояния в одну клетку при выставлении кораблей на поле,
     # также проверка связанности координат
-    def check_dist(self, massive):
+    def check_dist(self, massive, size):
         if len(self.coordinates) == 6:
             if (self.x == 0 or self.y == 0 or self.x1 == 0 or self.y1 == 0 or self.x2 == 0 or self.y2 == 0
-                    or self.x >= 7 or self.x1 >= 7 or self.y >= 7 or self.y1 >= 7 or self.x2 >= 7 or self.y2 >= 7):
-                print("Error 0: the coordinates have 0 value or value over than 7!")
+                    or self.x >= size+1 or self.x1 >= size+1 or self.y >= size+1
+                    or self.y1 >= size+1 or self.x2 >= size+1 or self.y2 >= size+1):
+                print("Error 0: the coordinates have 0 value or value over than size of field!")
                 return False
 
             if ((self.x == self.x1 and self.y == self.y1) or (self.x == self.x2 and self.y == self.y2)
@@ -272,8 +284,8 @@ class BattleShip:
     # получить координаты корабля
     def get_coordinates(self):
         if len(self.coordinates) == 6:
-            return self.x, self.y, self.x1, self.y1, self.x2, self.y2
+            return [self.x, self.y, self.x1, self.y1, self.x2, self.y2]
         elif len(self.coordinates) == 4:
-            return self.x, self.y, self.x1, self.y1
+            return [self.x, self.y, self.x1, self.y1]
         elif len(self.coordinates) == 2:
-            return self.x, self.y
+            return [self.x, self.y]
