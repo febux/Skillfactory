@@ -79,6 +79,9 @@ def handle_chat(message: telebot.types.Message):
             if text_cmd[0] not in currency.keys() or text_cmd[1] not in currency.keys():
                 raise APIException('Кажется, что вы неправильно ввели валюту или ввели валюту не из списка.')
                 # если введённые данные не содержатся в списке доступных валют, то вызываем исключение
+            if text_cmd[0] == text_cmd[1]:
+                raise APIException('Кажется, вы ввели одинкаовые валюты.')
+                # если данные совпадают, то вызываем исключение
             if not text_cmd[2].isdigit():
                 raise APIException('Кажется, что вы ввели неверную сумму.')
                 # если сумма обмена не цифра, то вызываем исключение
