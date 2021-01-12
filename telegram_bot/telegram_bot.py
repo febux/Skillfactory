@@ -73,6 +73,9 @@ def handle_chat(message: telebot.types.Message):
             if len(text_cmd) != 3:
                 raise APIException('Введено неверное количество данных.')
                 # если значений больше или меньше 3, то вызываем исключение
+            if not text_cmd[0].isalpha() or not text_cmd[1].isalpha():
+                raise APIException('Введены неверные данные.')
+                # если данные не похожи на буквы алфавита, то вызываем исключение
             if text_cmd[0] not in currency.keys() or text_cmd[1] not in currency.keys():
                 raise APIException('Кажется, что вы неправильно ввели валюту или ввели валюту не из списка.')
                 # если введённые данные не содержатся в списке доступных валют, то вызываем исключение
