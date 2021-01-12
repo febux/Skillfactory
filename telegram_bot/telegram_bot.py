@@ -89,7 +89,8 @@ def handle_chat(message: telebot.types.Message):
                                               f'{e}')
         else:
             exchange_amount = API.get_price(currency.get(base_currency), currency.get(exchange_currency), base_amount)
-            bot.send_message(message.chat.id, f'{base_amount} {base_currency} это {exchange_amount} {exchange_currency}')
+            bot.send_message(message.chat.id, f'{base_amount} {currency.get(base_currency)} = '
+                                              f'{exchange_amount} {currency.get(exchange_currency)}')
 
 
 # запуск бота
