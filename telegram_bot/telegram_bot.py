@@ -1,6 +1,6 @@
 import telebot
-from extensions import my_API
-from extensions import APIException_NotCorrectValueAmount, APIException_NotCorrectCurrency
+from extensions import API
+from extensions import APIException
 
 # список доступных валют
 currency = {
@@ -69,25 +69,27 @@ def handle_chat(message: telebot.types.Message):
             print(message.text)
             text_cmd = message.text.lower()
             text_cmd = text_cmd.split(" ")
-
+            # проверяем корректность ввода
+            if len(text_cmd) != 3:
+                raise APIException('Введено неверное количество данных.')
+                # если значений больше или меньше 3, то вызываем исключение
             if text_cmd[0] not in currency.keys() or text_cmd[1] not in currency.keys():
-                raise APIException_NotCorrectCurrency()
+                raise APIException('Кажется, что вы неправильно ввели валюту или ввели валюту не из списка.')
                 # если введённые данные не содержатся в списке доступных валют, то вызываем исключение
             if not text_cmd[2].isdigit():
-                raise APIException_NotCorrectValueAmount()  # если сумма обмена не цифра, то вызываем исключение
-        except IndexError:  # исключение вызываемое при введении недостаточного количества значений
-            bot.send_message(message.chat.id, 'Кажется, что вы не ввели одно или несколько значений.')
-        except APIException_NotCorrectCurrency:
-            bot.send_message(message.chat.id, 'Кажется, что вы неправильно ввели валюту или ввели валюту не из списка.')
-        except APIException_NotCorrectValueAmount:
-            bot.send_message(message.chat.id, 'Кажется, что вы ввели неверную сумму.')
+                raise APIException('Кажется, что вы ввели неверную сумму.')
+                # если сумма обмена не цифра, то вызываем исключение
+
+            base_currency, exchange_currency, base_amount = text_cmd
+
+        except APIException as e:
+            bot.send_message(message.chat.id, e)
+        except Exception as e:
+            bot.send_message(message.chat.id, f'Не удалось обработать запрос.\n'
+                                              f'{e}')
         else:
-            exchange_currency = currency.get(text_cmd[1])
-            base_currency = currency.get(text_cmd[0])
-            curr_amount = float(text_cmd[2])
-            bot.send_message(message.chat.id, f'{text_cmd[2]} {base_currency} '
-                                              f'это {my_API.get_price(base_currency, exchange_currency, curr_amount)} '
-                                              f'{exchange_currency}')
+            exchange_amount = API.get_price(currency.get(base_currency), currency.get(exchange_currency), base_amount)
+            bot.send_message(message.chat.id, f'{base_amount} {base_currency} это {exchange_amount} {exchange_currency}')
 
 
 # запуск бота

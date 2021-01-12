@@ -2,7 +2,7 @@ import requests
 import json
 
 
-class my_API:
+class API:
     def __init__(self, currencies):
         self.currencies = currencies
 
@@ -12,14 +12,10 @@ class my_API:
         req_curr_content = json.loads(req_curr.content)
         req_curr_content = req_curr_content["rates"]
         exchange_rate = req_curr_content[quote]
-        result = amount * exchange_rate
+        result = float(amount) * exchange_rate
         result = format(float(result), '.2f')
         return result
 
 
-class APIException_NotCorrectValueAmount(Exception):
-    pass
-
-
-class APIException_NotCorrectCurrency(Exception):
+class APIException(Exception):
     pass
