@@ -19,3 +19,18 @@ class API:
 
 class APIException(Exception):
     pass
+
+
+class Token:
+    def __init__(self):
+        pass
+
+    def __enter__(self):
+        self.file = open('token.conf', 'r')  # открываем файл для чтения
+        self.name_t = self.file.read(8)  # читаем первые символы с названием конфигурации
+        if self.name_t == "TOKEN = ":  # находим конфигурацию токена
+            self.TOKEN = self.file.read()  # считываем токен
+            return self.TOKEN
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.file.close()

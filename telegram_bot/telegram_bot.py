@@ -1,6 +1,7 @@
 import telebot
 from extensions import API
 from extensions import APIException
+from extensions import Token
 
 # список доступных валют
 currency = {
@@ -10,17 +11,9 @@ currency = {
 }
 
 
-# функция получения токена бота из файла
-def get_token():
-    with open('token.conf', 'r') as file:  # в контекстном менеджере открываем файл и считываем токен
-        name_t = file.read(8)
-        if name_t == "TOKEN = ":  # находим токен
-            TOKEN = file.read()  # считываем токен
-            return TOKEN  # возвращаем токен
-
-
-# создаём объект класса Телеграм-бот
-bot = telebot.TeleBot(get_token())
+# создаём объект класса Телеграм-бот в контекстном менеджере с получением токена из файла конфигурации
+with Token() as tg_token:
+    bot = telebot.TeleBot(tg_token)
 
 
 # обработчик сообщения START при начале работы с ботом
@@ -100,4 +93,5 @@ def handle_chat(message: telebot.types.Message):
 
 
 # запуск бота
-bot.polling(none_stop=True)
+if __name__ == '__main__':
+    bot.polling(none_stop=True)
