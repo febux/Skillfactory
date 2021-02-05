@@ -5,30 +5,20 @@ from django.contrib.auth.models import User
 class Author(models.Model):
     # objects = models.Manager()
     rating_author = models.IntegerField(default=0)
-    user_name = models.OneToOneField(User, on_delete=models.CASCADE)
+    author = models.OneToOneField(User, on_delete=models.CASCADE)
 
     def update_rating(self):
         posts = Post.objects.filter(author=self.id)  # все посты автора
-        rating_post = sum([r.rating_post * 3 for r in posts])  # рейтинг каждого поста автора умножен на 3
-        rating_comment = sum([r.rating_comment for r in Comment.objects.filter(author=self.user_name)])
+        rating_post = sum([a.rating_post * 3 for a in posts])  # рейтинг каждого поста автора умножен на 3
+        rating_comment = sum([a.rating_comment for a in Comment.objects.filter(author=self.author)])
         # сумма лайков/дислайков к комментам автора
-        all_to_post_comment_rating = sum([r.rating_comment for r in Comment.objects.filter(post__in=posts)])
+        all_to_post_comment_rating = sum([a.rating_comment for a in Comment.objects.filter(post__in=posts)])
         # сумма лайков/дислайков всех комментов к постам автора
         self.rating_author = rating_post + rating_comment + all_to_post_comment_rating
         self.save()
 
-    # def update_rating(self):
-    #     value_post = Author.objects.filter(Post.rating_post)  # Каждой статьи автора
-    #     value_post = value_post * 3
-    #     value_auth = Author.objects.filter(Comment.rating_comment)  # всех комментариев автора
-    #     value_comment = Author.objects.filter(Post.rating_post,
-    #                                           Comment.rating_comment)  # всех комментариев к статьям автор
-    #     value = value_post + value_auth + value_comment
-    #
-    #     self.rating_author = value
-
     def __str__(self):
-        return self.user_name
+        return self.author
 
 
 class Category(models.Model):
@@ -75,7 +65,7 @@ class PostCategory(models.Model):
 
 class Comment(models.Model):
     post_comment = models.ForeignKey(Post, on_delete=models.CASCADE)
-    user_comment = models.ForeignKey(User, on_delete=models.CASCADE)
+    author_comment = models.ForeignKey(User, on_delete=models.CASCADE)
     text_comment = models.TextField()
     date_comment = models.DateTimeField(auto_now_add=True)
     rating_comment = models.IntegerField(default=0)
@@ -89,5 +79,5 @@ class Comment(models.Model):
         self.save()
 
     def __str__(self):
-        info = str(self.user_comment.username)
+        info = str(self.author_comment.username)
         return info

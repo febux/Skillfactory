@@ -1,47 +1,68 @@
 from django.contrib.auth.models import User
-from news.models import Author, Post, Comment, Category, PostCategory
+from NewsPaper.news.models import Author, Post, Comment, Category
 
 #  Создаем пользователей
-User.objects.create(username='Abdullah', password='qwert')
-User.objects.create(username='Salem', password='qwert')
+User.objects.create(username='Abdullah', password='qwerty')
+User.objects.create(username='Salem', password='qwerty')
 
 # Создаем авторов
 Author.objects.create(author=User.objects.get(id=1))
 Author.objects.create(author=User.objects.get(id=2))
 
 # Создаем категории
-Category.objects.create(name='Спорт')
-Category.objects.create(name='Путешествия')
-Category.objects.create(name='Бизнес')
-Category.objects.create(name='Технологии')
+Category.objects.create(name='IT')
+Category.objects.create(name='AI')
+Category.objects.create(name='Business')
+Category.objects.create(name='New Tech')
 
 # Создаем новости и статьи
-Post.objects.create(author=Author.objects.get(id=5), type='NW',
-                    header='Новость',
-                    article_text='Сам текст новости')
+Post.objects.create(author=Author.objects.get(id=1), type='AR',
+                    header='Article 1',
+                    article_text='Text of Article 1')
 
-# Присваиваем категории новости из примера выше id=5
-# Вар 1
-post = Post.objects.get(id=5)
+Post.objects.create(author=Author.objects.get(id=1), type='AR',
+                    header='Article 2',
+                    article_text='Text of Article 2')
+
+Post.objects.create(author=Author.objects.get(id=1), type='NW',
+                    header='News',
+                    article_text='Text of News')
+
+# Присваиваем категории новости
+post = Post.objects.get(id=1)
 post.category.add(Category.objects.get(id=1))
+post.category.add(Category.objects.get(id=2))
 
-# Вар 2
-cat = Category.objects.get(id=2)
-PostCategory.objects.create(post=post, category = cat)
+post = Post.objects.get(id=2)
+post.category.add(Category.objects.get(id=2))
+post.category.add(Category.objects.get(id=4))
 
 # Создаем комментарии
-author = User.objects.get(id=6)
-post = Post.objects.get(id=5)
-Comment.objects.create(post=post, author=author, text='Здесь будет текст комментария')
+author = User.objects.get(id=2)
+post = Post.objects.get(id=1)
+Comment.objects.create(post=post, author=author, text='Comment text')
+author = User.objects.get(id=1)
+Comment.objects.create(post=post, author=author, text='Comment text 1')
+
+author = User.objects.get(id=1)
+post = Post.objects.get(id=2)
+Comment.objects.create(post=post, author=author, text='Comment text 2')
+author = User.objects.get(id=2)
+Comment.objects.create(post=post, author=author, text='Comment text 3')
 
 # Ставим лайки комментариям
 comments = Comment.objects.all()
-comments[6].like()  # 3 лайка для Тома Круза
+comments[1].like()
+comments[2].like()
+comments[1].dislike()
+comments[3].like()
+comments[3].dislike()
+comments[4].like()
 
-# Ставим лайки для поста
+# Ставим лайк для поста
 post.like()
 
-# меняем рейтинг посту
+# Меняем рейтинг посту
 post.post_rating = 100
 post.save()
 
@@ -49,17 +70,17 @@ post.save()
 for auth in Author.objects.all():
     auth.update_raiting()
 
-# Вывести имя и рейтинг лучшего пользоветеля
-Author.objects.all().order_by('-author_rating').values('author__username', 'author_rating')[0]
+# Выводим имя и рейтинг лучшего пользоветеля
+Author.objects.all().order_by('-rating_author').values('author__username', 'rating_author')[0]
 
-# Вывести самую крутую статью
+# Выводим самую лучшую статью
 best = Post.objects.all().order_by('-post_rating')[0]
-best_post = Post.objects.all().order_by('-post_rating').values( # выводим параметры
-    'created_time',
+best_post = Post.objects.all().order_by('-post_rating').values(  # выводим параметры
+    'date_post',
     'author__author__username',
-    'header', 'post_rating',
-    'article_text')[0]
+    'header_post', 'rating_post',
+    'text_post')[0]
 best.preview()
 
-# Вывести все комменты к статье
-Comment.objects.filter(post=best).values('author__username', 'created_time', 'text')
+# Выводим все комменты к статье
+Comment.objects.filter(post=best).values('author_comment__username', 'date_comment', 'text_comment')
