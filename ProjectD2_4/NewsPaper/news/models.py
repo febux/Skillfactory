@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 
 
 class Author(models.Model):
-    # objects = models.Manager()
+    objects = models.Manager()
     rating_author = models.IntegerField(default=0)
     author = models.OneToOneField(User, on_delete=models.CASCADE)
 
@@ -22,6 +22,7 @@ class Author(models.Model):
 
 
 class Category(models.Model):
+    objects = models.Manager()
     category_name = models.TextField(unique=True)
 
     def __str__(self):
@@ -29,6 +30,7 @@ class Category(models.Model):
 
 
 class Post(models.Model):
+    objects = models.Manager()
     article = 'AR'
     news = 'NW'
     unknown = 'UK'
@@ -64,6 +66,7 @@ class PostCategory(models.Model):
 
 
 class Comment(models.Model):
+    objects = models.Manager()
     post_comment = models.ForeignKey(Post, on_delete=models.CASCADE)
     author_comment = models.ForeignKey(User, on_delete=models.CASCADE)
     text_comment = models.TextField()

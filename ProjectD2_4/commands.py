@@ -63,7 +63,7 @@ comments[4].like()
 post.like()
 
 # Меняем рейтинг посту
-post.post_rating = 100
+post.post_rating = 5
 post.save()
 
 # Обновляем рейтинги авторов
