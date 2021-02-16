@@ -1,0 +1,45 @@
+<!--  наследуемся от шаблона default.html, который мы создавали ещё во времена flatpages -->
+{% extends 'flatpages/default.html' %}
+
+{% load custom_filters %} <!-- не забываем заранее загружать наши фильтры! -->
+
+{% block title %}
+News
+{% endblock title %}
+
+<!-- В контенте на странице мы выводим все товары -->
+{% block content %}
+<h1>Все новости: {{ news|length }}</h1>
+<h3>{{ time_now|date:'d M Y' }}</h3> <!-- Здесь мы применяем фильтр date. Он очень похож на метод strftime у даты.
+    С его помощью мы можем выводить дату в нужном нам формате -->																											  
+{% if news %}
+        <table>
+            <tr>
+                <td>
+                    Заголовок
+                </td>
+                <td>
+                    Дата публикации
+                </td>
+                <td>
+                    Текст статьи
+                </td>
+            </tr>
+        {% for new in news %}
+            <tr>
+                <td>
+                    <p align="justify"> {{ new.header_post|censor }} <p/>
+                </td>
+                <td>
+                    {{ new.date_post|date:'d M Y h:m' }}
+                </td>
+                <td>
+                    <p align="justify"> {{ new.text_post|truncatechars:50|censor }} <p/>
+                </td>
+            </tr>
+        {% endfor %}
+        </table>
+    {% else %}
+        <h2>Новостей нет!</h2>
+    {% endif %}
+{% endblock content %}
