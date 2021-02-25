@@ -56,6 +56,9 @@ class Post(models.Model):
     def __str__(self):
         return self.header_post
 
+    def get_absolute_url(self):  # добавим абсолютный путь чтобы после создания нас перебрасывало на страницу с товаром
+        return f'/news/{self.id}'
+
 
 class PostCategory(models.Model):
     post_category = models.ForeignKey(Post, on_delete=models.CASCADE)

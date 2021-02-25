@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'news',
     'accounts',
     'NewsPaper',
+    'django_filters',
 ]
 
 MIDDLEWARE = [
