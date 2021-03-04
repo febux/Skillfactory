@@ -21,6 +21,11 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('pages/', include('django.contrib.flatpages.urls')),
     path('news/', include('news.urls')),
+    path('sign/', include('sign.urls')),
+    path('', include('protect.urls')),
+    path('accounts/', include('allauth.urls')),
+    # path('sign/', include('allauth.urls')),
+    # path('sign/', include('django.contrib.auth.urls')),
     # делаем так, чтобы все адреса из нашего приложения (NewsPaper/urls.py)
     # сами автоматически подключались когда мы их добавим.
 ]

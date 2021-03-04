@@ -1,13 +1,14 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render
 from datetime import datetime
-
 from django.views.generic import ListView, UpdateView, CreateView, DetailView, DeleteView
 # импортируем класс, который говорит нам о том, что в этом представлении
 # мы будем выводить список объектов из БД
 from django.core.paginator import Paginator  # импортируем класс, позволяющий удобно осуществлять постраничный вывод
-from .models import Post
+from .models import Post, Author
 from .filters import PostFilter, PostFilterView  # импортируем недавно написанный фильтр
-from .forms import PostForm
+from .forms import PostForm, AuthorForm
+from django.contrib.auth.mixins import PermissionRequiredMixin
 
 
 # создаём представление в котором будет детали конкретного отдельного товара
@@ -53,14 +54,16 @@ class PostsFilter(ListView):
         return context
 
 
-class PostAddView(CreateView):
+class PostAddView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+    permission_required = ('news.add_post', )
     template_name = 'news/post_add.html'
     form_class = PostForm
     success_url = '/news/'
 
 
 # дженерик для редактирования объекта
-class PostEditView(UpdateView):
+class PostEditView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
+    permission_required = ('news.change_post',)
     template_name = 'news/post_edit.html'
     form_class = PostForm
     success_url = '/news/'
@@ -73,7 +76,8 @@ class PostEditView(UpdateView):
 
 
 # дженерик для удаления товара
-class PostDeleteView(DeleteView):
+class PostDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
+    permission_required = ('news.delete_post',)
     template_name = 'news/post_delete.html'
     queryset = Post.objects.all()
     success_url = '/news/'
@@ -83,3 +87,5 @@ class PostDeleteView(DeleteView):
     def get_object(self, **kwargs):
         id = self.kwargs.get('pk')
         return Post.objects.get(pk=id)
+
+
