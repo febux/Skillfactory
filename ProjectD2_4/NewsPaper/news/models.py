@@ -22,6 +22,7 @@ class Author(models.Model):
 
 class Category(models.Model):
     category_name = models.TextField(unique=True)
+    subscriber = models.ManyToManyField(to=User)
 
     def __str__(self):
         return self.category_name
@@ -35,7 +36,11 @@ class Post(models.Model):
 
     author_post = models.ForeignKey(Author, on_delete=models.CASCADE)
     type_post = models.CharField(max_length=2, choices=POST_TYPE, default=unknown)
-    category_post = models.ManyToManyField(Category, through='PostCategory')
+    category_post = models.ManyToManyField(to=Category,
+                                           # through='PostCategory',
+                                           # through_fields=('category_post', 'category_name'),
+                                           blank=True,
+                                           related_name='category')
     date_post = models.DateTimeField(auto_now_add=True)
     header_post = models.TextField()
     text_post = models.TextField()
@@ -56,13 +61,13 @@ class Post(models.Model):
     def __str__(self):
         return self.header_post
 
-    def get_absolute_url(self):  # добавим абсолютный путь чтобы после создания нас перебрасывало на страницу с товаром
+    def get_absolute_url(self):
         return f'/news/{self.id}'
 
 
 class PostCategory(models.Model):
-    post_category = models.ForeignKey(Post, on_delete=models.CASCADE)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    category_post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    category_name = models.ForeignKey(Category, on_delete=models.CASCADE)
 
 
 class Comment(models.Model):

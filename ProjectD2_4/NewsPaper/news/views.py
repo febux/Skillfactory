@@ -1,14 +1,63 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from datetime import datetime
+
+from django.template.loader import render_to_string
 from django.views.generic import ListView, UpdateView, CreateView, DetailView, DeleteView
 # импортируем класс, который говорит нам о том, что в этом представлении
 # мы будем выводить список объектов из БД
+from django.views import View
+from django.core.mail import send_mail, EmailMultiAlternatives
 from django.core.paginator import Paginator  # импортируем класс, позволяющий удобно осуществлять постраничный вывод
-from .models import Post, Author
+from .models import Post, Author, Category
 from .filters import PostFilter, PostFilterView  # импортируем недавно написанный фильтр
-from .forms import PostForm, AuthorForm
+from .forms import PostForm, CategoryForm
 from django.contrib.auth.mixins import PermissionRequiredMixin
+
+
+class CategorySubscribeView(LoginRequiredMixin, UpdateView):
+    model = Category  # указываем модель, объекты которой мы будем выводить
+    # queryset = Category.objects.order_by('-id')
+    form_class = CategoryForm
+    template_name = 'subscribe.html'  # указываем имя шаблона, в котором будет лежать html,
+    # в котором будут все инструкции о том, как именно пользователю должны вывестись наши объекты
+    context_object_name = 'category'  # это имя списка, в котором будут лежать все объекты
+
+    def get_object(self, **kwargs):
+        id = self.kwargs.get('pk')
+        return Category.objects.get(pk=id)
+
+    # def get(self, request, *args, **kwargs):
+    #     return render(request, 'subscribe.html', {})
+
+    def post(self, request, *args, **kwargs):
+        id = self.kwargs.get('pk')
+        current_category = Category.objects.get(pk=id)
+        current_user = self.request.user
+        current_category.subscriber.add(current_user)
+
+        # получем наш html
+        html_content = render_to_string(
+            'subscription_created.html',
+            {
+                'category': current_category,
+                'user': current_user,
+            }
+        )
+
+        # отправляем письмо
+        msg = EmailMultiAlternatives(
+            subject=f'{current_user.username}',
+            # имя клиента будет в теме для удобства
+            body=None,  # сообщение с кратким описанием проблемы
+            from_email='davydenkoraar@mail.ru',  # здесь указываете почту, с которой будете отправлять
+            to=[current_user.email]  # здесь список получателей. Например, секретарь, сам врач и т. д.
+        )
+        msg.attach_alternative(html_content, "text/html")  # добавляем html
+
+        msg.send()  # отсылаем
+
+        return redirect('/news/')
 
 
 # создаём представление в котором будет детали конкретного отдельного товара
@@ -59,6 +108,43 @@ class PostAddView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     template_name = 'news/post_add.html'
     form_class = PostForm
     success_url = '/news/'
+
+    # def post(self, request, *args, **kwargs):
+    #     category = request.POST['category_post']
+    #     new_post = Post.objects.create(
+    #         author_post=Author.objects.get(pk=request.POST['author_post']),
+    #         header_post=request.POST['header_post'],
+    #         text_post=request.POST['text_post'],
+    #     )
+    #     current_category = Category.objects.get(pk=category)
+    #     new_post.category_post.add(current_category)
+    #     new_post.save()
+    #
+    #     for sub in current_category.subscriber.all():
+    #         # получем наш html
+    #         html_content = render_to_string(
+    #             'following_mail.html',
+    #             {
+    #                 'new': new_post,
+    #                 'header': new_post.header_post,
+    #                 'user': sub,
+    #                 'text': new_post.text_post,
+    #                 'category': current_category,
+    #             }
+    #         )
+    #         # отправляем письмо
+    #         msg = EmailMultiAlternatives(
+    #             subject=f'{new_post.header_post}',
+    #             # имя клиента будет в теме для удобства
+    #             body=new_post.text_post,  # сообщение с кратким описанием проблемы
+    #             from_email='davydenkoraar@mail.ru',  # здесь указываете почту, с которой будете отправлять
+    #             to=[sub.email]  # здесь список получателей. Например, секретарь, сам врач и т. д.
+    #         )
+    #         msg.attach_alternative(html_content, "text/html")  # добавляем html
+    #
+    #         msg.send()  # отсылаем
+    #
+    #     return redirect('/news/')
 
 
 # дженерик для редактирования объекта

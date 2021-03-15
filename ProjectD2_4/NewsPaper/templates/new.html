@@ -7,7 +7,6 @@
 News
 {% endblock title %}
 
-<!-- В контенте на странице мы выводим сам товар, айди которого было передано в адрес -->
 {% block content %}
 
 <h1>{{ new.header_post|censor }}</h1>
@@ -15,6 +14,16 @@ News
 <hr>
   <p align="justify">{{ new.text_post|censor }}</p>
 <hr>
+<h4 align="left">Category:
+  {% for category in new.category_post.all %}
+<!--    <form action="{% url 'subscribe' new.id  %}" method="GET">-->
+
+  <a href="{% url 'subscribe' category.id %}"> {{ category }} </a>
+<!--      <input type="submit" value="Subscribe">-->
+<!--    </form>-->
+  {% endfor %}
+
+</h4>
 
 <h4 align="right">Дата публикации: {{ new.date_post|date:'d M Y h:m' }}</h4>
 

@@ -44,6 +44,10 @@ News
         {% endfor %}
         </table>
 
+{% else %}
+    <h2>Новостей нет!</h2>
+{% endif %}
+
         <a href="{% url 'post_add' %}">Добавить новый пост</a> <br>
 
         {% if is_paginated %}
@@ -67,7 +71,5 @@ News
             {% endif %}
         {% endif %}
 <br>
-    {% else %}
-        <h2>Новостей нет!</h2>
-    {% endif %}
+
 {% endblock content %}
