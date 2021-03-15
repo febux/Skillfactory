@@ -13,12 +13,12 @@ def notify_subscribers_post(sender, instance, created, **kwargs):
     if created:
         subject = f'New post - Author:{instance.author_post} Date:{instance.date_post.strftime("%d %m %Y")}'
     else:
-        subject = f'Post - Author:{instance.author_post} Date:{instance.date_post.strftime("%d %m %Y")} was changed.'
+        subject = f'Post - Author:{instance.author_post} Date:{instance.date_post.strftime("%d %m %Y")}.'
 
     for cat in instance.category_post.all():
-        print(cat)
+        # print(cat)
         current_category = Category.objects.get(category_name=cat)
-        print(current_category)
+        # print(current_category)
 
         for sub in current_category.subscriber.all():
             # получем наш html
