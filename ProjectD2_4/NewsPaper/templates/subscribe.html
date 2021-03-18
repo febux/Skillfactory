@@ -5,7 +5,6 @@ Subscription
 {% block content %}
     <form action="{% url 'subscribe' category.id  %}" method="post">
         {% csrf_token %}
-<!--        <input type="" value="">-->
         <h2>Категория новостей - {{ category.category_name }}</h2>
         <p> Вы, {{ user.username }}, хотите подписаться на {{ category.category_name }} ? </p>
         <input type="submit" value="Subscribe!">

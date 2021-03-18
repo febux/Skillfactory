@@ -22,14 +22,14 @@ def my_job():
     print('weekly mailing')
 
     for cat in Category.objects.all():
-        print(cat)
+        # print(cat)
         current_week = datetime.today().strftime("%V")
-        print(current_week)
+        # print(current_week)
         posts = Post.objects.all().filter(category_post=cat, date_post__week=current_week)
-        print(posts)
+        # print(posts)
 
         for sub in cat.subscriber.all():
-            print(sub)
+            # print(sub)
             # получем наш html
             html_content = render_to_string(
                 'following_mail_week.html',
