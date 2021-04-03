@@ -75,7 +75,6 @@ class PostDetail(DetailView):
         obj = cache.get(f'news-{self.kwargs["pk"]}',
                         None)  # кэш очень похож на словарь, и метод get действует также.
         # Он забирает значение по ключу, если его нет, то забирает None.
-
         # если объекта нет в кэше, то получаем его и записываем в кэш
         if not obj:
             obj = super().get_object(queryset=self.get_queryset())
