@@ -16,7 +16,7 @@ from .filters import PostFilter, PostFilterView  # импортируем нед
 from .forms import PostForm, CategoryForm
 from django.contrib.auth.mixins import PermissionRequiredMixin
 
-from .tasks import mailing_followers
+from django.core.cache import cache  # импортируем наш кэш
 
 
 class CategorySubscribeView(LoginRequiredMixin, UpdateView):
@@ -69,6 +69,19 @@ class PostDetail(DetailView):
     model = Post  # модель всё та же, но мы хотим получать детали конкретно отдельного товара
     template_name = 'new.html'  # название шаблона
     context_object_name = 'new'  # название объекта в нём будет
+    queryset = Post.objects.all()
+
+    def get_object(self, *args, **kwargs):  # переопределяем метод получения объекта, как ни странно
+        obj = cache.get(f'news-{self.kwargs["pk"]}',
+                        None)  # кэш очень похож на словарь, и метод get действует также.
+        # Он забирает значение по ключу, если его нет, то забирает None.
+
+        # если объекта нет в кэше, то получаем его и записываем в кэш
+        if not obj:
+            obj = super().get_object(queryset=self.get_queryset())
+            cache.set(f'news-{self.kwargs["pk"]}', obj)
+
+        return obj
 
 
 class PostsList(ListView):

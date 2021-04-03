@@ -1,9 +1,11 @@
 from django.urls import path
+from django.views.decorators.cache import cache_page
+
 from .views import PostsList, PostDetail, PostsFilter, PostAddView, PostDeleteView, PostEditView, CategorySubscribeView
 
 
 urlpatterns = [
-    path('', PostsList.as_view()),
+    path('', cache_page(60*10)(PostsList.as_view())),
     path('<int:pk>', PostDetail.as_view(), name='post_detail'),
     # pk — это первичный ключ, который будет выводиться у нас в шаблон
     path('search/', PostsFilter.as_view()),

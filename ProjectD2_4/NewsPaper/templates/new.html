@@ -2,11 +2,15 @@
 {% extends 'flatpages/default.html' %}
 
 {% load custom_filters %} <!-- не забываем заранее загружать наши фильтры! -->
+{% load cache %} <!-- Загружаем кэширование -->
+  {% cache 60 title %}
+    {% block title %}
+    News
+    {% endblock title %}
+  {% endcache %}
 
-{% block title %}
-News
-{% endblock title %}
 
+{% cache 60 content  %}
 {% block content %}
 
 <h1>{{ new.header_post|censor }}</h1>
@@ -25,3 +29,4 @@ News
 <h4 align="right">Дата публикации: {{ new.date_post|date:'d M Y h:m' }}</h4>
 
 {% endblock content %}
+{% endcache %}
