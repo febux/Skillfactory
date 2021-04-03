@@ -102,11 +102,13 @@ def event_hook(request):
                 response_msg = ":wave:, Hello <@%s> text 'help', " \
                                "if you would like to know how to use this bot." % user
 
-            if ('hi' or 'hello' or 'greetings' or 'salutation') in event_msg['text'].lower():
-                print("hi")
-                channel = event_msg['channel']
-                client.chat_postMessage(channel=channel, text=response_msg)
-                return HttpResponse(status=200)
+            for hi in ['hi', 'hello', 'greetings', 'salutation']:
+
+                if hi in event_msg['text'].lower():
+                    print(event_msg['text'].lower())
+                    channel = event_msg['channel']
+                    client.chat_postMessage(channel=channel, text=response_msg)
+                    return HttpResponse(status=200)
 
             if 'help' in event_msg['text'].lower():
                 print("help")
