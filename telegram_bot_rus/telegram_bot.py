@@ -149,5 +149,9 @@ def set_amount(message):
 
 # запуск бота
 if __name__ == '__main__':
-    api = API()
-    bot.polling(none_stop=True)  # без этого бот не будет работать
+    while True:
+        try:
+            api = API()
+            bot.polling(none_stop=True)  # без этого бот не будет работать
+        except:
+            pass
