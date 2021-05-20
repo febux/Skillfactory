@@ -1,0 +1,13 @@
+{% extends "flatpages/default.html" %}
+
+{% block content %}
+
+<form method="post" action="{% url 'activate' uidb64=uid code=code %}">
+{% csrf_token %}
+  <label for="code">Your verification code:</label><br>
+  <input type="text" id="code" name="code" /><br><br>
+
+  <input type="submit" value="Подтвердить" />
+</form>
+
+{% endblock %}

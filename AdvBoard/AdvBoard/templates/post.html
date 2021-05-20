@@ -1,0 +1,31 @@
+<!--  наследуемся от шаблона default.html, который мы создавали ещё во времена flatpages -->
+{% extends 'flatpages/default.html' %}
+
+{% load cache %} <!-- Загружаем кэширование -->
+  {% cache 60 title %}
+    {% block title %}
+    News
+    {% endblock title %}
+  {% endcache %}
+
+
+{% cache 60 content  %}
+{% block content %}
+
+<h1>{{ new.header_post }}</h1>
+
+<hr>
+  <p align="justify">{{ new.text_post }}</p>
+<hr>
+<h4 align="left">Category:
+  {% for category in new.category_post.all %}
+
+  <a href="{% url 'subscribe' category.id %}"> {{ category }} </a>
+  {% endfor %}
+
+</h4>
+
+<h4 align="right">Дата публикации: {{ new.date_post|date:'d M Y h:m' }}</h4>
+
+{% endblock content %}
+{% endcache %}
