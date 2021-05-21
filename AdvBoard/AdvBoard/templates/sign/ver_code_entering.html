@@ -2,10 +2,11 @@
 
 {% block content %}
 
-<form method="post" action="{% url 'activate' uidb64=uid code=code %}">
-{% csrf_token %}
-  <label for="code">Your verification code:</label><br>
-  <input type="text" id="code" name="code" /><br><br>
+<form method="post" action="{% url 'activate' %}">
+  {% csrf_token %}
+  <input type="hidden" id="uid" name="uid" value="{{ user.id }}">
+  <label for="ver_code">Your verification code:</label><br>
+  <input type="text" id="ver_code" name="ver_code" /><br><br>
 
   <input type="submit" value="Подтвердить" />
 </form>

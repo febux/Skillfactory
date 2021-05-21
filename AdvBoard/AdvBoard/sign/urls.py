@@ -14,7 +14,7 @@ urlpatterns = [
          name='logout'),
     path('signup/', signup, name='signup'),
     path('activate/', activate, name='activate'),
-    path('ver_code_entering/',
+    path('ver_code_entering/<int:pk>/',
          VerCodeView.as_view(),
          name='ver_code_entering'),
     # path('signup/',

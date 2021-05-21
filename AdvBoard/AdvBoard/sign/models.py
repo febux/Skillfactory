@@ -29,7 +29,7 @@ class BasicSignupForm(SignupForm):
 
 class OneTimeCode(models.Model):
     code = models.TextField(unique=True)
-    user = models.ManyToManyField(to=User)
+    user = models.OneToOneField(to=User, on_delete=models.CASCADE)
 
-    def __str__(self):
-        return self.user
+    def get_code(self):
+        return self.code
