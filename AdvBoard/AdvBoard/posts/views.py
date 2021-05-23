@@ -1,4 +1,6 @@
+from allauth.account.utils import user_email
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
@@ -11,12 +13,14 @@ from django.views.generic import ListView, UpdateView, CreateView, DetailView, D
 from django.views import View
 from django.core.mail import send_mail, EmailMultiAlternatives
 from django.core.paginator import Paginator  # импортируем класс, позволяющий удобно осуществлять постраничный вывод
-from .models import Post, Author, Category
+from .models import Post, Author, Category, Comment
 from .filters import PostFilter, PostFilterView  # импортируем недавно написанный фильтр
-from .forms import PostForm, CategoryForm
+from .forms import PostForm, CategoryForm, AddCommentForm
 from django.contrib.auth.mixins import PermissionRequiredMixin
 
 from django.core.cache import cache  # импортируем наш кэш
+
+from ..AdvBoard.settings import DEFAULT_FROM_EMAIL
 
 
 class CategorySubscribeView(LoginRequiredMixin, UpdateView):
@@ -28,15 +32,15 @@ class CategorySubscribeView(LoginRequiredMixin, UpdateView):
     context_object_name = 'category'  # это имя списка, в котором будут лежать все объекты
 
     def get_object(self, **kwargs):
-        id = self.kwargs.get('pk')
-        return Category.objects.get(pk=id)
+        uid = self.kwargs.get('pk')
+        return Category.objects.get(pk=uid)
 
     # def get(self, request, *args, **kwargs):
     #     return render(request, 'subscribe.html', {})
 
     def post(self, request, *args, **kwargs):
-        id = self.kwargs.get('pk')
-        current_category = Category.objects.get(pk=id)
+        uid = self.kwargs.get('pk')
+        current_category = Category.objects.get(pk=uid)
         current_user = self.request.user
         current_category.subscriber.add(current_user)
 
@@ -68,7 +72,7 @@ class CategorySubscribeView(LoginRequiredMixin, UpdateView):
 class PostDetail(DetailView):
     model = Post  # модель всё та же, но мы хотим получать детали конкретно отдельного товара
     template_name = 'post.html'  # название шаблона
-    context_object_name = 'new'  # название объекта в нём будет
+    context_object_name = 'post'  # название объекта
     queryset = Post.objects.all()
 
     def get_object(self, *args, **kwargs):  # переопределяем метод получения объекта, как ни странно
@@ -127,8 +131,9 @@ class PostAddView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
 
     def post(self, request, *args, **kwargs):
         category = request.POST['category_post']
+        author = Author.objects.get(author__username=request.POST['username'])
         new_post = Post.objects.create(
-            author_post=Author.objects.get(pk=request.POST['author_post']),
+            author_post=Author.objects.get(pk=author.id),
             header_post=request.POST['header_post'],
             text_post=request.POST['text_post'],
         )
@@ -149,8 +154,8 @@ class PostEditView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     # метод get_object мы используем вместо queryset,
     # чтобы получить информацию об объекте который мы собираемся редактировать
     def get_object(self, **kwargs):
-        id = self.kwargs.get('pk')
-        return Post.objects.get(pk=id)
+        uid = self.kwargs.get('pk')
+        return Post.objects.get(pk=uid)
 
 
 # дженерик для удаления товара
@@ -163,37 +168,33 @@ class PostDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     # метод get_object мы используем вместо queryset,
     # чтобы получить информацию об объекте который мы собираемся редактировать
     def get_object(self, **kwargs):
-        id = self.kwargs.get('pk')
-        return Post.objects.get(pk=id)
+        uid = self.kwargs.get('pk')
+        return Post.objects.get(pk=uid)
 
 
-class AddReviews(LoginRequiredMixin, CreateView):
-    template_name = 'add_reviews.html'
-    # form_class = AddReviewsForm
-    login_url = '/accounts/login/'
-    success_url = '/'
+class CommentAddView(LoginRequiredMixin, CreateView):
+    template_name = 'add_comment.html'
+    form_class = AddCommentForm
+    login_url = '/sign/login/'
+    success_url = '/posts/'
 
-    def form_valid(self, form):
-        self.object = form.save(commit=False)
-        pk = self.kwargs.get('pk')
-        user = self.request.user
-        self.object.commentator = user
-        self.object.declaration_id = pk
-        self.object.save()
-        return super().form_valid(form)
-    '''def post(self, request, *args, **kwargs):
-        post = get_object_or_404(Declaration, id=self.kwargs.get(self.pk_url_kwarg))
-        user_email = post.user.email
-        reviews = Reviews(review=request.POST['review'],
-                          commentator=self.request.user,
-                          )
+    def post(self, request, *args, **kwargs):
+        uid = self.kwargs.get('pk')
+        current_post = Post.objects.get(pk=uid)
+        new_comment = Comment.objects.create(
+            post_comment=current_post,
+            author_comment=User.objects.get(pk=request.POST['uid']),
+            text_comment=request.POST['text_comment'],
+        )
         send_mail(
-            subject=f'отклик от пользывателя : {reviews.commentator}',
-            message=f'текст отклика : {reviews.review}',
+            subject=f'Отклик от пользывателя : {new_comment.author_comment}',
+            message=f'Текст отклика : {new_comment.text_comment}',
             from_email=DEFAULT_FROM_EMAIL,
             recipient_list=[user_email]
         )
-        return redirect('/')'''
+        return redirect(f'/posts/{uid}')
 
-
+    def get_object(self, **kwargs):
+        uid = self.kwargs.get('pk')
+        return Post.objects.get(pk=uid)
 

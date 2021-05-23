@@ -27,6 +27,10 @@ class Post(models.Model):
     header_post = models.TextField()
     text_post = models.TextField()
 
+    def get_comments_post(self):
+        comments = Comment.objects.filter(post_comment=self)
+        return comments
+
     def preview(self):
         preview = self.text_post[:100] + '...'
         return preview
@@ -49,6 +53,7 @@ class Comment(models.Model):
     date_comment = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        info = str(self.author_comment.username)
+        info = "'" + str(self.text_comment) + "'" + "--- Author:" + str(self.author_comment.username) +\
+               "- Date:" + str(self.date_comment)
         return info
 

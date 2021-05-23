@@ -4,7 +4,7 @@
 {% load cache %} <!-- Загружаем кэширование -->
   {% cache 60 title %}
     {% block title %}
-    News
+    Posts
     {% endblock title %}
   {% endcache %}
 
@@ -12,20 +12,30 @@
 {% cache 60 content  %}
 {% block content %}
 
-<h1>{{ new.header_post }}</h1>
+<h1>{{ post.header_post }}</h1>
 
 <hr>
-  <p align="justify">{{ new.text_post }}</p>
+  <p align="justify">{{ post.text_post }}</p>
 <hr>
 <h4 align="left">Category:
-  {% for category in new.category_post.all %}
+  {% for category in post.category_post.all %}
 
   <a href="{% url 'subscribe' category.id %}"> {{ category }} </a>
   {% endfor %}
 
 </h4>
 
-<h4 align="right">Дата публикации: {{ new.date_post|date:'d M Y h:m' }}</h4>
+<h4 align="right">Дата публикации: {{ post.date_post|date:'d M Y h:m' }}</h4>
+<h4 align="right">Автор: {{ post.author_post }}</h4>
+
+
+<h4 align="left">Comments:</h4>
+  {% for comment in post.get_comments_post %}
+
+  <h4>  {{ comment }} </h4>
+  {% endfor %}
+
+<a href="{% url 'comment_add' post.id %}">Добавить новый отклик</a> <br>
 
 {% endblock content %}
 {% endcache %}

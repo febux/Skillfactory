@@ -1,7 +1,5 @@
 {% extends 'flatpages/default.html' %}
 
-{% load custom_filters %} <!-- не забываем заранее загружать наши фильтры! -->
-
 {% block title %} Product list {% endblock title %}
 
 {% block content %}
@@ -29,7 +27,7 @@
             {{ post.date_post }}
         </td>
         <td>
-            {{ post.header_post|censor }}
+            {{ post.header_post }}
         </td>
         <td>
             {{ post.rating_post }}

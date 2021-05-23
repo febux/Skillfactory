@@ -55,8 +55,9 @@ def signup(request):
             user = form.save(commit=False)
             user.is_active = False
             user.save()
-            basic_group = Group.objects.get(name='common')
+            basic_group = Group.objects.get(name='authors')
             basic_group.user_set.add(user)
+            Author.objects.create(author=user)
             print(user.id)
             verification_code = OneTimeCode(code=random_ver_code(), user=user)
             verification_code.save()
@@ -71,7 +72,7 @@ def signup(request):
             email = EmailMessage(
                         mail_subject, message, to=[to_email]
             )
-            # email.send()
+            email.send()
             return redirect(f'/sign/ver_code_entering/{user.id}')
     else:
         form = SignupForm()
