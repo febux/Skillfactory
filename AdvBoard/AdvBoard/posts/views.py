@@ -20,7 +20,7 @@ from django.contrib.auth.mixins import PermissionRequiredMixin
 
 from django.core.cache import cache  # импортируем наш кэш
 
-from ..AdvBoard.settings import DEFAULT_FROM_EMAIL
+from AdvBoard.settings import DEFAULT_FROM_EMAIL
 
 
 class CategorySubscribeView(LoginRequiredMixin, UpdateView):
@@ -186,15 +186,27 @@ class CommentAddView(LoginRequiredMixin, CreateView):
             author_comment=User.objects.get(pk=request.POST['uid']),
             text_comment=request.POST['text_comment'],
         )
+        author_post = User.objects.get(username=current_post.author_post)
         send_mail(
             subject=f'Отклик от пользывателя : {new_comment.author_comment}',
-            message=f'Текст отклика : {new_comment.text_comment}',
+            message=f'Текст отклика : {new_comment.text_comment}\n'
+                    f'Для подтверждения отклика перейдите по ссылке:'
+                    f'http://127.0.0.1:8000/posts/{uid}/comment_accept/{new_comment.id}/',
             from_email=DEFAULT_FROM_EMAIL,
-            recipient_list=[user_email]
+            recipient_list=[author_post.email]
         )
         return redirect(f'/posts/{uid}')
 
     def get_object(self, **kwargs):
         uid = self.kwargs.get('pk')
         return Post.objects.get(pk=uid)
+
+
+def comment_accept(request, pk, ck):
+    # current_post = Post.objects.get(pk=pk)
+    current_comment = Comment.objects.get(pk=ck)
+    current_comment.is_accepted = True
+    current_comment.save()
+    return redirect(f'/posts/{pk}')
+
 

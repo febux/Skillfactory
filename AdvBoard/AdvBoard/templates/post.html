@@ -32,7 +32,9 @@
 <h4 align="left">Comments:</h4>
   {% for comment in post.get_comments_post %}
 
+  {% if comment.is_accepted %}
   <h4>  {{ comment }} </h4>
+  {% endif %}
   {% endfor %}
 
 <a href="{% url 'comment_add' post.id %}">Добавить новый отклик</a> <br>

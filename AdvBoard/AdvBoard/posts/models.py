@@ -51,9 +51,10 @@ class Comment(models.Model):
     author_comment = models.ForeignKey(User, on_delete=models.CASCADE)
     text_comment = models.TextField()
     date_comment = models.DateTimeField(auto_now_add=True)
+    is_accepted = models.BooleanField(default=False)
 
     def __str__(self):
         info = "'" + str(self.text_comment) + "'" + "--- Author:" + str(self.author_comment.username) +\
-               "- Date:" + str(self.date_comment)
+                "- Date:" + str(self.date_comment)
         return info
 

@@ -166,7 +166,7 @@ EMAIL_HOST = 'smtp.mail.ru'  # адрес сервера Яндекс-почты
 EMAIL_PORT = 465  # порт smtp сервера тоже одинаковый
 EMAIL_HOST_USER = 'davydenkoraar'  # ваше имя пользователя, например если ваша почта user@yandex.ru,
 # то сюда надо писать user, иными словами, это всё то что идёт до собаки
-EMAIL_HOST_PASSWORD = '288408750213Sana'  # пароль от почты
+EMAIL_HOST_PASSWORD = '288408750213SANA'  # пароль от почты
 EMAIL_USE_SSL = True
 DEFAULT_FROM_EMAIL = 'davydenkoraar@mail.ru'
 
