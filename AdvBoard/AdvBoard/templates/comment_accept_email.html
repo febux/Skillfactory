@@ -1,7 +1,7 @@
 {% autoescape off %}
 Hi {{ user.username }},
 
-Please click on the link below to confirm your registration:
-
-http://{{ domain }}{% url 'accept' %}
+Your comment was accepted.
+Post: {{ header }}
+Comment: {{ text }}
 {% endautoescape %}

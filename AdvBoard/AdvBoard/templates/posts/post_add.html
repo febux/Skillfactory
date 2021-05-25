@@ -2,7 +2,7 @@
  
 {% block content %}
 <h3>Информация о новости</h3>
-<form method="POST">
+<form method="POST" enctype="multipart/form-data">
     {% csrf_token %}
     <input type="hidden" id="username" name="username" value="{{ user.username }}">
     {{ form }} <br>    <!-- Теперь нам нужна только готовая форма и кнопка -->

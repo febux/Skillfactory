@@ -5,8 +5,8 @@ from .views import PostsList, PostDetail, PostsFilter, PostAddView, PostDeleteVi
     CategorySubscribeView, CommentAddView, comment_accept
 
 urlpatterns = [
-    path('', cache_page(60*10)(PostsList.as_view())),
-    path('<int:pk>', PostDetail.as_view(), name='post_detail'),
+    path('', PostsList.as_view()),
+    path('<int:pk>', PostDetail.as_view(), name='post_detail'),  # cache_page(60*10)
     # pk — это первичный ключ, который будет выводиться у нас в шаблон
     path('search/', PostsFilter.as_view()),
     path('add/', PostAddView.as_view(), name='post_add'),  # Ссылка на создание

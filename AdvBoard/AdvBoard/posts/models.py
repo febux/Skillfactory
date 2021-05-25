@@ -26,6 +26,7 @@ class Post(models.Model):
     date_post = models.DateTimeField(auto_now_add=True)
     header_post = models.TextField()
     text_post = models.TextField()
+    image_post = models.ImageField(upload_to='media/uploads/', null=True, blank=True)
 
     def get_comments_post(self):
         comments = Comment.objects.filter(post_comment=self)
@@ -41,9 +42,9 @@ class Post(models.Model):
     def get_absolute_url(self):
         return f'/posts/{self.id}'
 
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)  # сначала вызываем метод родителя, чтобы объект сохранился
-        cache.delete(f'news-{self.pk}')  # затем удаляем его из кэша, чтобы сбросить его
+    # def save(self, *args, **kwargs):
+    #     super().save(*args, **kwargs)  # сначала вызываем метод родителя, чтобы объект сохранился
+    #     cache.delete(f'posts-{self.pk}')  # затем удаляем его из кэша, чтобы сбросить его
 
 
 class Comment(models.Model):

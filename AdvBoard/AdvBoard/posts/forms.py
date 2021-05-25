@@ -6,7 +6,7 @@ class PostForm(ModelForm):
 
     class Meta:
         model = Post
-        fields = ['header_post', 'text_post', 'category_post']
+        fields = ['header_post', 'text_post', 'category_post', 'image_post']
 
 
 class CategoryForm(ModelForm):

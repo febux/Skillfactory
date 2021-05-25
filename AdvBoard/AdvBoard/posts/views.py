@@ -17,6 +17,7 @@ from .models import Post, Author, Category, Comment
 from .filters import PostFilter, PostFilterView  # импортируем недавно написанный фильтр
 from .forms import PostForm, CategoryForm, AddCommentForm
 from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.core.files.uploadedfile import SimpleUploadedFile
 
 from django.core.cache import cache  # импортируем наш кэш
 
@@ -70,21 +71,25 @@ class CategorySubscribeView(LoginRequiredMixin, UpdateView):
 
 # создаём представление в котором будет детали конкретного отдельного товара
 class PostDetail(DetailView):
-    model = Post  # модель всё та же, но мы хотим получать детали конкретно отдельного товара
+    model = Post  # модель всё та же, но мы хотим получать детали конкретно отдельного
     template_name = 'post.html'  # название шаблона
     context_object_name = 'post'  # название объекта
     queryset = Post.objects.all()
 
-    def get_object(self, *args, **kwargs):  # переопределяем метод получения объекта, как ни странно
-        obj = cache.get(f'posts-{self.kwargs["pk"]}',
-                        None)  # кэш очень похож на словарь, и метод get действует также.
-        # Он забирает значение по ключу, если его нет, то забирает None.
-        # если объекта нет в кэше, то получаем его и записываем в кэш
-        if not obj:
-            obj = super().get_object(queryset=self.get_queryset())
-            cache.set(f'posts-{self.kwargs["pk"]}', obj)
+    # def get_object(self, *args, **kwargs):  # переопределяем метод получения объекта, как ни странно
+    #     obj = cache.get(f'posts-{self.kwargs["pk"]}',
+    #                     None)  # кэш очень похож на словарь, и метод get действует также.
+    #     # Он забирает значение по ключу, если его нет, то забирает None.
+    #     # если объекта нет в кэше, то получаем его и записываем в кэш
+    #     if not obj:
+    #         obj = super().get_object(queryset=self.get_queryset())
+    #         cache.set(f'posts-{self.kwargs["pk"]}', obj)
+    #
+    #     return obj
 
-        return obj
+    def get_object(self, **kwargs):
+        uid = self.kwargs.get('pk')
+        return Post.objects.get(pk=uid)
 
 
 class PostsList(ListView):
@@ -103,7 +108,6 @@ class PostsList(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['time_now'] = datetime.utcnow()  # добавим переменную текущей даты time_now
-        context['filter'] = PostFilterView(self.request.GET, queryset=self.get_queryset())
         return context
 
 
@@ -136,6 +140,7 @@ class PostAddView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
             author_post=Author.objects.get(pk=author.id),
             header_post=request.POST['header_post'],
             text_post=request.POST['text_post'],
+            image_post=request.FILES['image_post']
         )
         current_category = Category.objects.get(pk=category)
         new_post.category_post.add(current_category)
