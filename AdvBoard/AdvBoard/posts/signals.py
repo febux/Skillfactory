@@ -15,7 +15,7 @@ def notify_author_comment(sender, instance, accepted, **kwargs):
     if accepted:
         subject = f'New comment - Author:{instance.author_comment} Date:{instance.date_comment.strftime("%d %m %Y")}'
     else:
-        subject = f'Post - Author:{instance.author_comment} Date:{instance.date_comment.strftime("%d %m %Y")}.'
+        subject = f'Comment - Author:{instance.author_comment} Date:{instance.date_comment.strftime("%d %m %Y")}.'
 
     # получем наш html
     html_content = render_to_string(
@@ -38,3 +38,19 @@ def notify_author_comment(sender, instance, accepted, **kwargs):
     msg.attach_alternative(html_content, "text/html")  # добавляем html
 
     msg.send()
+
+
+# в декоратор передаётся первым аргументом сигнал, на который будет реагировать эта функция,
+# и в отправители надо передать также модель
+@receiver(post_save, sender=Post)
+def notify_subscribers_post(sender, instance, created, **kwargs):
+    if created:
+        subject = f'New post - Author:{instance.author_post} Date:{instance.date_post.strftime("%d %m %Y")}'
+    else:
+        subject = f'Post - Author:{instance.author_post} Date:{instance.date_post.strftime("%d %m %Y")}.'
+
+    for cat in instance.category_post.all():
+        # print(cat)
+        current_category = Category.objects.get(category_name=cat)
+
+        mailing_followers.delay(instance.id, current_category.id)

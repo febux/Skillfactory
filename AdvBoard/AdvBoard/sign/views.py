@@ -110,24 +110,3 @@ def upgrade_me(request):
     Author.objects.create(author=user)
     return redirect('/')
 
-# def usual_login_view(request):
-#     username = request.POST['username']
-#     password = request.POST['password']
-#
-#     user = authenticate(request, username=username, password=password)
-#     if user is not None:
-#         one_time_code = OneTimeCode.objects.create(code=random.choice('abcde'), user=user)
-#         print(one_time_code)
-#         # send e-mail with code
-#
-#     else:
-#         pass
-
-
-# def login_with_code_view(request):
-#     username = request.POST['username']
-#     code = request.POST['code']
-#     if OneTimeCode.objects.filter(code=code, user__username=username).exists():
-#         login(request, user)
-#     else:
-#         pass
